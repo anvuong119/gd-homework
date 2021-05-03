@@ -20,7 +20,7 @@
         "removeComments": false,
         "suppressImplicitAnyIndexErrors": true,
         "useDefineForClassFields": true,
-        "strict": true,
+        "strict": false,
     },
     "include": ["src", "tests"],
     "exclude": ["node_modules", "build", "dist"]
