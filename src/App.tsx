@@ -4,6 +4,9 @@ import { BackendProvider } from "@gooddata/sdk-ui";
 import { useAuth } from "./contexts/Auth";
 import { WorkspaceListProvider } from "./contexts/WorkspaceList";
 import Home from "./components/Home";
+import { LocalizedIntlProvider } from "./components/LocalizedIntlProvider";
+
+import { DEFAULT_LANGUAGE } from "./utils/translations";
 
 function App() {
     const { backend } = useAuth();
@@ -11,7 +14,9 @@ function App() {
     return (
         <BackendProvider backend={backend}>
             <WorkspaceListProvider>
-                <Home />
+                <LocalizedIntlProvider locale={DEFAULT_LANGUAGE}>
+                    <Home />
+                </LocalizedIntlProvider>
             </WorkspaceListProvider>
         </BackendProvider>
     );

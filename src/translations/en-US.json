@@ -1,0 +1,12 @@
+{
+    "dashboard.prefix": {
+        "value": "My Dashboard",
+        "comment": "",
+        "limit": 0
+    },
+    "datefilter.name": {
+        "value": "Selected date range",
+        "comment": "",
+        "limit": 0
+    }
+}

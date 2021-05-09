@@ -1,5 +1,11 @@
 @import "../theme.scss";
 
+.DashboardTitle {
+    margin-top: $spacing;
+    margin-left: $spacing;
+    margin-bottom: -$spacing;
+}
+
 .DateFilter {
     margin: $spacing $spacing;
 }
