@@ -9,3 +9,18 @@
 .DateFilter {
     margin: $spacing $spacing;
 }
+
+.ChartCalculation {
+    display: flex;
+    height: 500px;
+
+    .Chart {
+        float: left;
+        width: 66%;
+    }
+
+    .Calculation {
+        float: right;
+        width: 34%;
+    }
+}

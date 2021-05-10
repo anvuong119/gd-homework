@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@gooddata/goodstrap": "^70.2.2",
         "@gooddata/sdk-backend-bear": "^8.3.0",
         "@gooddata/sdk-backend-spi": "^8.3.0",
         "@gooddata/sdk-model": "^8.3.0",
