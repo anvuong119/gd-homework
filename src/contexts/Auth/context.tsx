@@ -63,7 +63,7 @@ export const AuthProvider: React.FC = ({ children }) => {
     useEffect(() => {
         const auth = async () => {
             try {
-                await backend.authenticate();
+                await backend.authenticate(true);
                 onLoginSuccess();
             } catch (err) {
                 // we do not care about the error in this context
