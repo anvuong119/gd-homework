@@ -35,13 +35,6 @@
     margin-top: $spacing/2;
 }
 
-.Header {
-    margin: -2 * $spacing -1 * $spacing $spacing * 2 -1 * $spacing;
-    padding: $spacing $spacing;
-    background-color: $color-paper-inverse;
-    color: $color-text-inverse;
-}
-
 .Column {
     display: flex;
     flex-direction: row;

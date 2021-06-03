@@ -3,7 +3,7 @@ import { BackendProvider } from "@gooddata/sdk-ui";
 
 import { useAuth } from "./contexts/Auth";
 import { WorkspaceListProvider } from "./contexts/WorkspaceList";
-import Home from "./routes/Home";
+import Home from "./components/Home";
 
 function App() {
     const { backend } = useAuth();
