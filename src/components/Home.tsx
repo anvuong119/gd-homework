@@ -4,7 +4,7 @@ import { LineChart } from "@gooddata/sdk-ui-charts";
 
 import DashboardTitle from "../components/DashboardTitle";
 import AppDateFilter from "../components/filters/AppDateFilter";
-import CalculationView from "./controls/CalculationView";
+import RevenueExecution from "./controls/RevenueExecution";
 
 import { Product, Revenue } from "../ldm/full";
 import { useWorkspaceList } from "../contexts/WorkspaceList";
@@ -22,13 +22,6 @@ const Home: React.FC = () => {
 
     const { firstWorkspace: workspaceId } = useWorkspaceList();
 
-    const getRevenueText = (rawResult: number): string => {
-        if (typeof rawResult === "number") {
-            return `\$ ${rawResult}`;
-        }
-        return rawResult;
-    };
-
     return (
         <div>
             <div className={styles.DashboardTitle}>
@@ -38,7 +31,7 @@ const Home: React.FC = () => {
                 <AppDateFilter onDateFilterSelected={dateFilterSelected} />
             </div>
             {workspaceId && (
-                <div className={styles.ChartCalculation}>
+                <div className={styles.ChartRevenueExecution}>
                     <div className={styles.Chart}>
                         <LineChart
                             workspace={workspaceId}
@@ -47,8 +40,8 @@ const Home: React.FC = () => {
                             filters={dateFilter ? [dateFilter] : []}
                         />
                     </div>
-                    <div className={styles.Calculation}>
-                        <CalculationView getResultText={getRevenueText} />
+                    <div className={styles.RevenueExecution}>
+                        <RevenueExecution />
                     </div>
                 </div>
             )}

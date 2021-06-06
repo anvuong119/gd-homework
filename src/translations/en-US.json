@@ -9,17 +9,17 @@
         "comment": "",
         "limit": 0
     },
-    "calculations.revenue.max": {
+    "executions.revenue.max": {
         "value": "Maximum Revenue",
         "comment": "",
         "limit": 0
     },
-    "calculations.revenue.min": {
+    "executions.revenue.min": {
         "value": "Minimum Revenue",
         "comment": "",
         "limit": 0
     },
-    "calculations.quantiles.median": {
+    "executions.revenue.median": {
         "value": "Median Revenue",
         "comment": "",
         "limit": 0
