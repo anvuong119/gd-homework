@@ -86,7 +86,6 @@ const CalculationSelector: React.FC = (): JSX.Element => {
                     <option value="minimum">Minimum Revenue</option>
                 </select>
             </label>
-            <hr />
         </>
     );
 
@@ -127,8 +126,9 @@ const CalculationSelector: React.FC = (): JSX.Element => {
                             }
                         `}
                     </style>
-                    {calculateSelection}
                     <p className="kpi s-execute-kpi">{resultCalculation}</p>
+                    <hr />
+                    {calculateSelection}
                 </div>
             ) : null}
         </div>
