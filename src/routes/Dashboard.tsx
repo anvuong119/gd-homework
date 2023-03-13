@@ -11,6 +11,7 @@ import { DateFilterGranularity } from "@gooddata/sdk-model";
 import * as Md from "../md/full";
 
 import CalculationSelector from "./CalculationSelector";
+import Page from "../components/Page";
 
 const availableGranularities: DateFilterGranularity[] = ["GDC.time.month"];
 interface IDateFilterComponentState {
@@ -19,7 +20,8 @@ interface IDateFilterComponentState {
 }
 
 const dateFilterContainerStyle = { width: 200 };
-const lineChartContainerStyle = { height: 300, width: 1264 };
+const lineChartContainerStyle = { height: 300, width: "80%" };
+const calculationSelectorContainerStyle = { height: 300, margin: "0 0 0 30px" };
 
 export const Dashboard: React.FC = () => {
     const [state, setState] = useState<IDateFilterComponentState>({
@@ -44,7 +46,7 @@ export const Dashboard: React.FC = () => {
     );
 
     return (
-        <div>
+        <Page>
             <h1>My Dashboard {timeTitle}</h1>
             <div style={dateFilterContainerStyle}>
                 <DateFilter
@@ -66,10 +68,10 @@ export const Dashboard: React.FC = () => {
                         filters={dateFilter ? [dateFilter] : []}
                     />
                 </div>
-                <div className="inline">
+                <div style={calculationSelectorContainerStyle} className="inline">
                     <CalculationSelector />
                 </div>
             </div>
-        </div>
+        </Page>
     );
 };
