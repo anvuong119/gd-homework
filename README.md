@@ -1,92 +1,112 @@
-# gd-homework-test
+## GoodData.UI Accelerator Toolkit Application
 
+This project was bootstrapped with [GoodData.UI Accelerator Toolkit](https://sdk.gooddata.com/gooddata-ui/docs/create_new_application.html).
 
+-  To start the application on your workstation run the `npm run start` command.
+-  To create a production build run the `npm run build` command.
 
-## Getting started
+This project uses the [Create React App](https://github.com/facebook/create-react-app) (CRA) scripts and infrastructure, you
+can find the original documentation for CRA in [HOWTO.md](./HOWTO.md).
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Getting started
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Before you can create visualizations for data in your workspace, you need to export its Logical Data Model (LDM). You can
+then use the exported LDM entities to define the visualizations.
 
-## Add your files
+The export is simple: run the `npm run refresh-md` command.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+-  This command will use information from [constants.ts](./src/constants.ts). It will connect to GoodData servers running
+   on the host specified in the `backend` property and [export](https://sdk.gooddata.com/gooddata-ui/docs/export_catalog.html) MD for the `workspace` of your choice.
+-  If your configuration does not specify `workspace`, the script will prompt you to choose one of the workspaces available in the `backend`.
 
+Once done, you will find that the [src/md/full.ts](src/md/full.ts) file will be populated with attribute and measure definitions
+matching the MD defined in your workspace. You can then use these generated definitions as inputs to the different
+[visualization components](https://sdk.gooddata.com/gooddata-ui/docs/start_with_visual_components.html) available in GoodData.UI SDK.
+
+**Note: Before running this script, please make sure `backend` is defined in `constants.ts` file.**
+
+**Hint: To avoid constantly typing in credentials, you can create `.gdcatalogrc` file where you define your `username` and `password`.**
+
+### Deployment
+
+There are two ways to deploy your application.
+
+1. If your domain does not have CORS set up and you want to get up and running fast, you can use the pre-configured Docker image included with the app.
+2. If the Docker way is not suitable for you, you can build and deploy the app manually (keep in mind that you will have to setup CORS on your GoodData domain so that it allows access from your application).
+
+#### Using the built-in Docker support
+
+The application comes with a simple Dockerfile. This image is a pre-configured nginx instance that both serves the application files and acts as a reverse proxy for your GoodData domain. In this deployment, your GoodData domain does not need any CORS setup because the application will only communicate with its origin server.
+To use it, run these commands in your terminal:
+
+```bash
+# build production version of your application
+npm run build
+# build the docker image
+docker build -t your-tag .
+# run the docker image
+docker run \
+    --rm \
+    --publish 3000:8080 \
+    --name your-name \
+    --env BACKEND_HOST="secure.gooddata.com" \
+    --env BACKEND_URL="https://secure.gooddata.com" \
+    your-tag:latest
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/thanhdb/gd-homework-test.git
-git branch -M main
-git push -uf origin main
+
+The meaning of the `docker run` parameters is:
+
+-   `--publish 3000:8080` – expose the nginx running on port 8080 by default (you can change that if needed by adding `--env PORT=5000`, just make sure you update the `--publish` value accordingly), to port 3000 on your machine.
+-   `--name your-name` – assign a name to the container run.
+-   `--env BACKEND_HOST="secure.gooddata.com"` and `--env BACKEND_URL="https://secure.gooddata.com"` – set the host/URL where the GoodData analytical backend is running respectively. You need to change these values if you host GoodData on a different domain.
+
+**IMPORTANT**: The Docker image is not setup with SSL certificates and thus by default offers no support for HTTPS. Read on to learn more.
+
+##### HTTPS on localhost
+
+If you intend to use the Docker image on localhost and you need support for HTTPS, then you can use self-signed certificates.
+
+First generate the certificate and private key and store them in the `docker` directory.
+
+```bash
+cd docker
+openssl req -x509 -out localhost.crt -keyout localhost.key \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
 ```
 
-## Integrate with your tools
+Then edit the [Dockerfile](./Dockerfile) and [docker/nginx.conf.template](./docker/nginx.conf.template) and uncomment the marked-up lines.
 
-- [ ] [Set up project integrations](https://gitlab.com/thanhdb/gd-homework-test/-/settings/integrations)
+##### HTTPS in production
 
-## Collaborate with your team
+If you plan on hosting your application on platforms such as Heroku that solve the HTTPS transport and do the SSL termination
+for you, then you do not have to set up anything - this image is good to go.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+**IMPORTANT**: If your hosting does not provide SSL termination then we strongly recommend to not use this image as is. Your data or other
+sensitive information will be at serious risk.
 
-## Test and Deploy
+If you already own certificates issued by a trusted CA, then you can reconfigure the nginx to use them. The process is similar to
+how you set up HTTPS on localhost.
 
-Use the built-in continuous integration in GitLab.
+If you do not own certificates but have your own domain then you can use the [Let's Encrypt](https://letsencrypt.org/) Certificate Authority. We recommend
+that you switch the base image in the [Dockerfile](./Dockerfile) and use the [nginx-certbot](https://hub.docker.com/r/jonasal/nginx-certbot); this will
+automate the certificate acquisition and renewal process for you.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+#### Building and deploying manually
 
-***
+To deploy the application without the use of the provided Dockerfile, you can run
 
-# Editing this README
+```bash
+npm run build
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+which will create a `build` folder with all the build outputs that can you can then host anyway you want. Built like this, the application will assume that the GoodData Analytical Backend is hosted on the same host as the application itself.
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+In case you want to host the application on a host other than the one you use to host the GoodData Analytical Backend, you should build the application like this
 
-## Name
-Choose a self-explaining name for your project.
+```bash
+npm run build-with-explicit-hostname
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Built like this, the application will connect to the GoodData Analytical Backend hosted at the host specified in `src/constants.ts` in `backend` field.
