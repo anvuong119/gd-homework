@@ -2,12 +2,12 @@ import React from "react";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
 import { WorkspaceProvider } from "../contexts/Workspace";
-import Page from "../components/Page";
 
 import Login from "./Login";
 import Logout from "./Logout";
 import Welcome from "./Welcome";
 import Home from "./Home";
+import {Dashboard} from "./Dashboard";
 
 import styles from "./AppRouter.module.scss";
 
@@ -28,7 +28,7 @@ const AppRouter: React.FC = () => {
                 <WorkspaceProvider>
                     <Route exact path="/" component={Home} />
                     <Route exact path="/welcome" component={Welcome} />
-                    <Route exact path="/dashboard" component={() => <Page>Dashboard</Page>} />
+                    <Route exact path="/dashboard" component={Dashboard} />
                     <Route exact path="/login" component={Login} />
                     <Route exact path="/logout" component={Logout} />
                     {/* DELETE THIS LINE */} <Redirect to="/welcome" />
