@@ -1,125 +1,32 @@
 import React, { useState } from "react";
 import {
     DateFilter,
+    DateFilterHelpers,
     DateFilterOption,
-    IDateFilterOptionsByType,
+    defaultDateFilterOptions,
 } from "@gooddata/sdk-ui-filters";
 import { LineChart } from "@gooddata/sdk-ui-charts";
 import { DateFilterGranularity } from "@gooddata/sdk-model";
 
 import * as Md from "../md/full";
 
+// import CalculationSelector from "./CalculationSelector";
+
 const availableGranularities: DateFilterGranularity[] = ["GDC.time.month"];
-
-const defaultDateFilterOptions: IDateFilterOptionsByType = {
-    allTime: {
-        localIdentifier: "ALL_TIME",
-        type: "allTime",
-        name: "",
-        visible: true,
-    },
-    absoluteForm: {
-        localIdentifier: "ABSOLUTE_FORM",
-        type: "absoluteForm",
-        from: "2017-01-01",
-        to: "2017-12-31",
-        name: "",
-        visible: true,
-    },
-    absolutePreset: [
-        {
-            from: "2015-01-01",
-            to: "2015-12-31",
-            name: "Year 2015",
-            localIdentifier: "year2015",
-            visible: true,
-            type: "absolutePreset",
-        },
-        {
-            from: "2016-01-01",
-            to: "2016-12-31",
-            name: "Year 2016",
-            localIdentifier: "year2016",
-            visible: true,
-            type: "absolutePreset",
-        },
-        {
-            from: "2017-01-01",
-            to: "2017-12-31",
-            name: "Year 2017",
-            localIdentifier: "year2017",
-            visible: true,
-            type: "absolutePreset",
-        },
-    ],
-    relativeForm: {
-        localIdentifier: "RELATIVE_FORM",
-        type: "relativeForm",
-        granularity: "GDC.time.year",
-        from: -2,
-        to: -2,
-        name: "",
-        visible: true,
-    },
-    relativePreset: {
-        "GDC.time.year": [
-            {
-                from: -2,
-                to: -2,
-                granularity: "GDC.time.year",
-                localIdentifier: "twoYearsAgo",
-                type: "relativePreset",
-                visible: true,
-                name: "2 years ago",
-            },
-            {
-                from: -3,
-                to: -3,
-                granularity: "GDC.time.year",
-                localIdentifier: "threeYearsAgo",
-                type: "relativePreset",
-                visible: true,
-                name: "3 years ago",
-            },
-            {
-                from: -4,
-                to: -4,
-                granularity: "GDC.time.year",
-                localIdentifier: "fourYearsAgo",
-                type: "relativePreset",
-                visible: true,
-                name: "4 years ago",
-            },
-        ],
-    },
-};
-
-const CustomComponent: React.FC = ({ children, ...restProps }) => (
-    <CalculationSelector {...restProps}>
-        <title>Calculation Selector</title>
-    </CalculationSelector>
-);
-
-const CalculationSelector: React.FC = ({ children, ...restProps }) => (
-    <>
-        {children}
-        <div {...restProps}></div>
-    </>
-);
-
-interface IDateFilterComponentExampleState {
+interface IDateFilterComponentState {
     selectedFilterOption: DateFilterOption;
     excludeCurrentPeriod: boolean;
 }
 
 const dateFilterContainerStyle = { width: 200 };
-const lineChartContainerStyle = { height: 300, width: 1248 };
+const lineChartContainerStyle = { height: 300, width: 1264 };
 
 export const Dashboard: React.FC = () => {
-    const [state, setState] = useState<IDateFilterComponentExampleState>({
+    const [state, setState] = useState<IDateFilterComponentState>({
         selectedFilterOption: defaultDateFilterOptions.allTime!,
         excludeCurrentPeriod: false,
     });
+
 
     const onApply = (selectedFilterOption: DateFilterOption, excludeCurrentPeriod: boolean) => {
         setState({
@@ -127,6 +34,12 @@ export const Dashboard: React.FC = () => {
             excludeCurrentPeriod,
         });
     };
+
+    const dateFilter = DateFilterHelpers.mapOptionToAfm(
+        state.selectedFilterOption,
+        Md.DateDatasets.Date.ref,
+        state.excludeCurrentPeriod,
+    );
 
     return (
         <div>
@@ -142,21 +55,22 @@ export const Dashboard: React.FC = () => {
                     onApply={onApply}
                 />
             </div>
-
             <>
-                <div style={lineChartContainerStyle}>
+                <div style={lineChartContainerStyle} className="inline">
                     <LineChart
                         measures={[Md.PercentRevenuePerProduct]}
                         trendBy={Md.DateDatasets.Date.Month.Short}
                         segmentBy={Md.Product.Default}
+                        filters={dateFilter ? [dateFilter] : []}
                     />
                 </div>
-                <div>
-                    
-                    <CustomComponent />
-
-                </div>
+                {/* <div className="inline">
+                    <CalculationSelector>
+                        <title>Calculation Selector</title>
+                    </CalculationSelector>
+                </div> */}
             </>
+
         </div>
     );
 };
