@@ -10,7 +10,7 @@ import { DateFilterGranularity } from "@gooddata/sdk-model";
 
 import * as Md from "../md/full";
 
-// import CalculationSelector from "./CalculationSelector";
+import CalculationSelector from "./CalculationSelector";
 
 const availableGranularities: DateFilterGranularity[] = ["GDC.time.month"];
 interface IDateFilterComponentState {
@@ -27,12 +27,14 @@ export const Dashboard: React.FC = () => {
         excludeCurrentPeriod: false,
     });
 
+    const [timeTitle, setTimeTitle] = useState(DateFilterHelpers.getDateFilterRepresentation(state.selectedFilterOption, 'en-US'));
 
     const onApply = (selectedFilterOption: DateFilterOption, excludeCurrentPeriod: boolean) => {
         setState({
             selectedFilterOption,
             excludeCurrentPeriod,
         });
+        setTimeTitle(DateFilterHelpers.getDateFilterRepresentation(selectedFilterOption, 'en-US'));
     };
 
     const dateFilter = DateFilterHelpers.mapOptionToAfm(
@@ -43,7 +45,7 @@ export const Dashboard: React.FC = () => {
 
     return (
         <div>
-            <h1>My Dashboard </h1>
+            <h1>My Dashboard {timeTitle}</h1>
             <div style={dateFilterContainerStyle}>
                 <DateFilter
                     excludeCurrentPeriod={state.excludeCurrentPeriod}
@@ -55,7 +57,7 @@ export const Dashboard: React.FC = () => {
                     onApply={onApply}
                 />
             </div>
-            <>
+            <div>
                 <div style={lineChartContainerStyle} className="inline">
                     <LineChart
                         measures={[Md.PercentRevenuePerProduct]}
@@ -64,13 +66,10 @@ export const Dashboard: React.FC = () => {
                         filters={dateFilter ? [dateFilter] : []}
                     />
                 </div>
-                {/* <div className="inline">
-                    <CalculationSelector>
-                        <title>Calculation Selector</title>
-                    </CalculationSelector>
-                </div> */}
-            </>
-
+                <div className="inline">
+                    <CalculationSelector />
+                </div>
+            </div>
         </div>
     );
 };
