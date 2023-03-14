@@ -100,9 +100,6 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
             {status === "error" ? (
                 <div>
                     {calculateSelection}
-                    <div className="gd-message error">
-                        <div className="gd-message-text">Oops, simulated error! Retry?</div>
-                    </div>
                     <ErrorComponent
                         message="There was an error getting your execution"
                         description={JSON.stringify(error, null, 2)}
