@@ -3,7 +3,11 @@ import { LoadingComponent, ErrorComponent, useExecutionDataView } from "@gooddat
 import { modifyAttribute } from "@gooddata/sdk-model";
 import * as Md from "../md/full";
 
-const CalculationSelector: React.FC = (): JSX.Element => {
+interface IProps {
+    filters: any;
+}
+
+const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
     const [selectedCalculation, setSelectedCalculation] = useState('maximum');
     const [resultCalculation, setResultCalculation] = useState('0');
 
@@ -14,9 +18,11 @@ const CalculationSelector: React.FC = (): JSX.Element => {
         Md.DateDatasets.Date.Month.Short, (a) => a.alias("Month"),
     );
     const slicesBy = [monthDate];
+    const dateFilter = filters;
+    console.log('filters', dateFilter);
 
     const { result, error, status } = useExecutionDataView({ 
-        execution: { seriesBy, slicesBy }
+        execution: { seriesBy, slicesBy } //todo implement with dateFilter
     });
 
     const measureSeries = result?.data().series().firstForMeasure(measure);

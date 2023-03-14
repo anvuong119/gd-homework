@@ -69,7 +69,7 @@ export const Dashboard: React.FC = () => {
                     />
                 </div>
                 <div style={calculationSelectorContainerStyle} className="inline">
-                    <CalculationSelector />
+                    <CalculationSelector filters={dateFilter}/>
                 </div>
             </div>
         </Page>
