@@ -11,7 +11,7 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
     const [selectedCalculation, setSelectedCalculation] = useState('maximum');
     const [resultCalculation, setResultCalculation] = useState('0');
 
-    const measure = Md.PercentRevenuePerProduct;
+    const measure = Md.Revenue;
     const seriesBy = [measure];
 
     const monthDate = modifyAttribute(
@@ -39,26 +39,27 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
         calculateData(event.target.value);       
     }
 
-    const findMax = (arr: ((string | null)[] | undefined)) => {
+    const findMaxValue = (arr: ((string | null)[] | undefined)) => {
         let max = 0;
         if (arr) {
             for (let i = 0; i < arr?.length; i++) {
                 let value = arr[i] ?? '0';
-                if (parseFloat(value) > max) {
-                    max = parseFloat(value);
+                if (parseFloat(value.replace(/[^0-9.-]+/g,"")) > max) {
+                    max = parseFloat(value.replace(/[^0-9.-]+/g,""));
+
                 }
             }
         }
         return max;
     }
 
-    const findMin = (arr: ((string | null)[] | undefined)) => {
-        let min = 100;
+    const findMinValue = (arr: ((string | null)[] | undefined)) => {
+        let min = -1
         if (arr) {
             for (let i = 0; i < arr?.length; i++) {
                 let value = arr[i] ?? '0';
-                if (parseFloat(value) < min) {
-                    min = parseFloat(value);
+                if (parseFloat(value.replace(/[^0-9.-]+/g,"")) < min || min === -1) {
+                    min = parseFloat(value.replace(/[^0-9.-]+/g,""));
                 }
             }
         }
@@ -72,12 +73,12 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
             let resultCalculation = 0;
             let measureSeriesFormatted = measureSeries?.dataPoints().map((dp) => dp.formattedValue());
             if (value === 'maximum') {
-                resultCalculation = findMax(measureSeriesFormatted);
+                resultCalculation = findMaxValue(measureSeriesFormatted);
             } else if (value === 'minimum') {
-                resultCalculation = findMin(measureSeriesFormatted);
+                resultCalculation = findMinValue(measureSeriesFormatted);
             }
             
-            setResultCalculation(resultCalculation+'%');
+            setResultCalculation('$' + resultCalculation.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'));
         }
     }
 

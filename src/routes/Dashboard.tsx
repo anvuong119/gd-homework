@@ -21,7 +21,7 @@ interface IDateFilterComponentState {
 
 const dateFilterContainerStyle = { width: 200 };
 const lineChartContainerStyle = { height: 300, width: "80%" };
-const calculationSelectorContainerStyle = { height: 300, margin: "0 0 0 30px" };
+const calculationSelectorContainerStyle = { height: 300, margin: "0 0 0 10px", width: "15%" };
 
 export const Dashboard: React.FC = () => {
     const [state, setState] = useState<IDateFilterComponentState>({
@@ -62,7 +62,7 @@ export const Dashboard: React.FC = () => {
             <div>
                 <div style={lineChartContainerStyle} className="inline">
                     <LineChart
-                        measures={[Md.PercentRevenuePerProduct]}
+                        measures={[Md.Revenue]}
                         trendBy={Md.DateDatasets.Date.Month.Short}
                         segmentBy={Md.Product.Default}
                         filters={dateFilter ? [dateFilter] : []}
