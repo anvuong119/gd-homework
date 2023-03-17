@@ -3,10 +3,10 @@ import { LoadingComponent, ErrorComponent, useExecutionDataView } from "@gooddat
 import { modifyAttribute } from "@gooddata/sdk-model";
 import * as Md from "../md/full";
 import { findMaxValue, findMinValue } from "../utils/helpers";
-// import cx from "classnames";
+
 import styles from "./CalculationSelector.module.scss";
 
-const CalculationSelector: React.FC = (): JSX.Element => {
+const CalculationSelector: React.FC = () => {
     const [selectedCalculation, setSelectedCalculation] = useState('maximum');
     const [resultCalculation, setResultCalculation] = useState('0');
 
@@ -19,7 +19,7 @@ const CalculationSelector: React.FC = (): JSX.Element => {
     const slicesBy = [monthDate];
 
     const { result, error, status } = useExecutionDataView({ 
-        execution: { seriesBy, slicesBy } //todo implement with dateFilter
+        execution: { seriesBy, slicesBy }
     });
 
     const measureSeries = result?.data().series().firstForMeasure(measure);
@@ -69,7 +69,6 @@ const CalculationSelector: React.FC = (): JSX.Element => {
         <div>
             {status === "error" ? (
                 <div>
-                    {calculateSelection}
                     <ErrorComponent
                         message="There was an error getting your execution"
                         description={JSON.stringify(error, null, 2)}
@@ -88,9 +87,10 @@ const CalculationSelector: React.FC = (): JSX.Element => {
                 <div>
                     <p className={styles.resultCalculation}>{resultCalculation}</p>
                     <hr />
-                    {calculateSelection}
+                    
                 </div>
             ) : null}
+            {calculateSelection}
         </div>
     );
 };
