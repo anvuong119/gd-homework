@@ -12,16 +12,15 @@ import * as Md from "../md/full";
 
 import CalculationSelector from "./CalculationSelector";
 import Page from "../components/Page";
+import styles from "./Dashboard.module.scss";
+import cx from "classnames";
 
 const availableGranularities: DateFilterGranularity[] = ["GDC.time.month"];
+
 interface IDateFilterComponentState {
     selectedFilterOption: DateFilterOption;
     excludeCurrentPeriod: boolean;
 }
-
-const dateFilterContainerStyle = { width: 200 };
-const lineChartContainerStyle = { height: 300, width: "80%" };
-const calculationSelectorContainerStyle = { height: 300, margin: "0 0 0 10px", width: "15%" };
 
 export const Dashboard: React.FC = () => {
     const [state, setState] = useState<IDateFilterComponentState>({
@@ -48,7 +47,7 @@ export const Dashboard: React.FC = () => {
     return (
         <Page>
             <h1>My Dashboard {timeTitle}</h1>
-            <div style={dateFilterContainerStyle}>
+            <div className={styles.dateFilterContainer}>
                 <DateFilter
                     excludeCurrentPeriod={state.excludeCurrentPeriod}
                     selectedFilterOption={state.selectedFilterOption}
@@ -60,7 +59,7 @@ export const Dashboard: React.FC = () => {
                 />
             </div>
             <div>
-                <div style={lineChartContainerStyle} className="inline">
+                <div className={cx(styles.lineChartContainer, "inline")}>
                     <LineChart
                         measures={[Md.Revenue]}
                         trendBy={Md.DateDatasets.Date.Month.Short}
@@ -68,8 +67,8 @@ export const Dashboard: React.FC = () => {
                         filters={dateFilter ? [dateFilter] : []}
                     />
                 </div>
-                <div style={calculationSelectorContainerStyle} className="inline">
-                    <CalculationSelector filters={dateFilter}/>
+                <div className={cx(styles.calculationSelectorContainer, "inline")}>
+                    <CalculationSelector/>
                 </div>
             </div>
         </Page>
