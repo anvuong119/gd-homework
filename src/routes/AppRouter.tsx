@@ -7,7 +7,7 @@ import Login from "./Login";
 import Logout from "./Logout";
 import Welcome from "./Welcome";
 import Home from "./Home";
-import {Dashboard} from "./Dashboard";
+import { Dashboard } from "../components/Dashboard";
 
 import styles from "./AppRouter.module.scss";
 

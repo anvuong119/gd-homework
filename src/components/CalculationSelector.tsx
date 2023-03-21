@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { LoadingComponent, ErrorComponent, useExecutionDataView } from "@gooddata/sdk-ui";
 import { modifyAttribute } from "@gooddata/sdk-model";
 import * as Md from "../md/full";
+import { findMaxValue, findMinValue } from "../utils/helpers";
 
-interface IProps {
-    filters: any;
-}
+import styles from "./CalculationSelector.module.scss";
 
-const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
+const CalculationSelector: React.FC = () => {
     const [selectedCalculation, setSelectedCalculation] = useState('maximum');
     const [resultCalculation, setResultCalculation] = useState('0');
 
@@ -18,15 +17,12 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
         Md.DateDatasets.Date.Month.Short, (a) => a.alias("Month"),
     );
     const slicesBy = [monthDate];
-    const dateFilter = filters;
-    console.log('filters', dateFilter);
 
     const { result, error, status } = useExecutionDataView({ 
-        execution: { seriesBy, slicesBy } //todo implement with dateFilter
+        execution: { seriesBy, slicesBy }
     });
 
     const measureSeries = result?.data().series().firstForMeasure(measure);
-    // const measureResult = measureSeries?.dataPoints()[0].formattedValue() ?? 'N/A';
 
     useEffect(() => {
         calculateData('maximum');
@@ -37,33 +33,6 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedCalculation(event.target.value);
         calculateData(event.target.value);       
-    }
-
-    const findMaxValue = (arr: ((string | null)[] | undefined)) => {
-        let max = 0;
-        if (arr) {
-            for (let i = 0; i < arr?.length; i++) {
-                let value = arr[i] ?? '0';
-                if (parseFloat(value.replace(/[^0-9.-]+/g,"")) > max) {
-                    max = parseFloat(value.replace(/[^0-9.-]+/g,""));
-
-                }
-            }
-        }
-        return max;
-    }
-
-    const findMinValue = (arr: ((string | null)[] | undefined)) => {
-        let min = -1
-        if (arr) {
-            for (let i = 0; i < arr?.length; i++) {
-                let value = arr[i] ?? '0';
-                if (parseFloat(value.replace(/[^0-9.-]+/g,"")) < min || min === -1) {
-                    min = parseFloat(value.replace(/[^0-9.-]+/g,""));
-                }
-            }
-        }
-        return min;
     }
 
     const calculateData = (value: string) => {
@@ -100,7 +69,6 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
         <div>
             {status === "error" ? (
                 <div>
-                    {calculateSelection}
                     <ErrorComponent
                         message="There was an error getting your execution"
                         description={JSON.stringify(error, null, 2)}
@@ -117,24 +85,12 @@ const CalculationSelector: React.FC<IProps> = ({filters}): JSX.Element => {
             ) : null}
             {status === "success" ? (
                 <div>
-                    <style>
-                        {`
-                            .kpi {
-                                height: 60px;
-                                margin: 10px 0;
-                                font-size: 50px;
-                                line-height: 60px;
-                                white-space: nowrap;
-                                vertical-align: bottom;
-                                font-weight: 700;
-                            }
-                        `}
-                    </style>
-                    <p className="kpi s-execute-kpi">{resultCalculation}</p>
+                    <p className={styles.resultCalculation}>{resultCalculation}</p>
                     <hr />
-                    {calculateSelection}
+                    
                 </div>
             ) : null}
+            {calculateSelection}
         </div>
     );
 };
